@@ -98,6 +98,12 @@ restoreSOCC() {
 	fi
 }
 
+delete() {
+	query "$DELETE_OCC" >/dev/null
+	query "$DELETE_SOCC" >/dev/null
+	echo "========== Deleted OCC and SOCC. =========="
+}
+
 clear
 while true; do
 	if [ ! -f "$DATABASE_FILE" ]; then
@@ -108,7 +114,8 @@ while true; do
     echo "	1. Check"
     echo "	2. Override"
     echo "	3. Restore Default"
-    echo "	4. Exit"
+	echo "  4. Delete Keys"
+    echo "	5. Exit"
 	echo "Enter your choice: "
     read choice
     case $choice in
@@ -132,12 +139,18 @@ while true; do
             echo "========== END ==========\n"
             ;;
         4)
-            echo "Exiting the script. Goodbye!"
-            exit 0
+            clear
+			echo "You selected Option 4, deleting..."
+			delete
+			echo "========== END ==========\n"
             ;;
+		5)
+			echo "Exiting the script. Goodbye!"
+			exit 0
+			;;
         *)
             clear
-            echo "Invalid choice. Please enter a number between 1 and 4."
+            echo "Invalid choice. Please enter a number between 1 and 5."
             echo "====================\n"
             ;;
     esac
