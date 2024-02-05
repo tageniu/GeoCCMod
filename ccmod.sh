@@ -13,7 +13,9 @@ UPDATE_SOCC="UPDATE defaults SET value='1' WHERE key='ShouldOverrideCountryCode'
 DELETE_OCC="DELETE FROM defaults WHERE key='OverrideCountryCode';"
 DELETE_SOCC="DELETE FROM defaults WHERE key='ShouldOverrideCountryCode';"
 
-killGEOD() { killall com.apple.geod 2>/dev/null; sleep 0.1 }
+killGEOD() { 
+	killall -9 com.apple.geod 2>/dev/null; sleep 0.1
+}
 
 query() {  # e.g. query "$CHECK_OCC"
 	if [ $# != 1 ]; then
@@ -28,6 +30,25 @@ query() {  # e.g. query "$CHECK_OCC"
 		RESULT=$(sqlite3 -line "$DATABASE_FILE" "$1" 2>/dev/null)
 	done
 	echo "$RESULT"
+}
+
+check() {
+	RESULT_OCC=$(query "$CHECK_OCC")
+	RESULT_SOCC=$(query "$CHECK_SOCC")
+	
+	if [ -z "$RESULT_OCC" ]; then
+		echo "========== OCC NOT found. =========="
+	else
+		echo "========== OCC Result =========="
+		echo "$RESULT_OCC"
+	fi
+	
+	if [ -z "$RESULT_SOCC" ]; then
+		echo "========== SOCC NOT found. =========="
+	else
+		echo "========== SOCC Result =========="
+		echo "$RESULT_SOCC"
+	fi
 }
 
 updateOCC() {
@@ -79,6 +100,10 @@ restoreSOCC() {
 
 clear
 while true; do
+	if [ ! -f "$DATABASE_FILE" ]; then
+		echo "Error: Database file not found."
+		exit 1
+	fi
 	echo "Menu:"
     echo "	1. Check"
     echo "	2. Override"
@@ -90,10 +115,7 @@ while true; do
         1)
         	clear
             echo "You selected Option 1, checking..."
-            echo "========== OCC Result =========="
-            query "$CHECK_OCC"
-            echo "========== SOCC Result =========="
-            query "$CHECK_SOCC"
+            check
             echo "========== END ==========\n"
             ;;
         2)
