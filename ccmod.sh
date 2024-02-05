@@ -1,9 +1,17 @@
 #!/bin/zsh
 
-# Specify your SQLite database file and queries
-DATABASE_FILE=~/Library/Containers/com.apple.geod/Data/Library/Caches/com.apple.geod/GEOConfigStore.db
 CC=CN
+# Specify GEOConfigStore.db location
+macos_version=$(sw_vers -productVersion)
+major_version=$(echo $macos_version | awk -F '.' '{print $1}')
+if [ "$major_version" -ge 14 ]; then
+    DATABASE_FILE=~/Library/Containers/com.apple.geod/Data/Library/Caches/com.apple.geod/Vault/GEOConfigStore.db
+else
+    DATABASE_FILE=~/Library/Containers/com.apple.geod/Data/Library/Caches/com.apple.geod/GEOConfigStore.db
+fi
 
+
+# SQL queries
 CHECK_OCC="SELECT * FROM defaults WHERE key='OverrideCountryCode';"
 CHECK_SOCC="SELECT * FROM defaults WHERE key='ShouldOverrideCountryCode';"
 ADD_OCC="INSERT INTO defaults (key,parent,type,value) VALUES ('OverrideCountryCode','0','str','$CC');"
