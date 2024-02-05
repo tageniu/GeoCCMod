@@ -114,7 +114,7 @@ while true; do
     echo "	1. Check"
     echo "	2. Override"
     echo "	3. Restore Default"
-	echo "  4. Delete Keys"
+	echo "	4. Delete Keys"
     echo "	5. Exit"
 	echo "Enter your choice: "
     read choice
