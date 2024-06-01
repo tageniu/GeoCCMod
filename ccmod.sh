@@ -10,7 +10,6 @@ else
     DATABASE_FILE=~/Library/Containers/com.apple.geod/Data/Library/Caches/com.apple.geod/GEOConfigStore.db
 fi
 
-
 # SQL queries
 CHECK_OCC="SELECT * FROM defaults WHERE key='OverrideCountryCode';"
 CHECK_SOCC="SELECT * FROM defaults WHERE key='ShouldOverrideCountryCode';"
@@ -128,8 +127,8 @@ while true; do
     read choice
     case $choice in
         1)
-        	clear
-            echo "You selected Option 1, checking..."
+			clear
+			echo "You selected Option 1, checking..."
             check
             echo "========== END ==========\n"
             ;;

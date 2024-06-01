@@ -1,0 +1,14 @@
+"Loading..." = "加载中...";
+"OCC Result:" = "OCC 信息：";
+"SOCC Result:" = "SOCC 信息：";
+"Override" = "修改";
+"Restore" = "恢复";
+"Open Maps" = "打开“地图”";
+"OCC NOT found." = "找不到 OCC 信息。";
+"SOCC NOT found." = "找不到 SOCC 信息。";
+"Only host setting can be overriden from simulator." = "模拟器只能修改宿主机设置。";
+"Cannot open host's Maps from simulator." = "无法从模拟器打开宿主机“地图”。";
+"Show Version" = "显示版本";
+"Hide Version" = "隐藏版本";
+"Environment version will be shown in the Maps." = "环境版本将在地图中显示。";
+"Environment version will be hidden in the Maps." = "环境版本将在地图中隐藏。";
