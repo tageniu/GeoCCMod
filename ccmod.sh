@@ -13,12 +13,16 @@ fi
 # SQL queries
 CHECK_OCC="SELECT * FROM defaults WHERE key='OverrideCountryCode';"
 CHECK_SOCC="SELECT * FROM defaults WHERE key='ShouldOverrideCountryCode';"
+CHECK_SENR="SELECT * FROM defaults WHERE key='GEOShowEnvironmentNameRule';"
 ADD_OCC="INSERT INTO defaults (key,parent,type,value) VALUES ('OverrideCountryCode','0','str','$CC');"
 ADD_SOCC="INSERT INTO defaults (key,parent,type,value) VALUES ('ShouldOverrideCountryCode','0','int','1');"
+ADD_SENR="INSERT INTO defaults (key,parent,type,value) VALUES ('GEOShowEnvironmentNameRule','0','int','2');"
 UPDATE_OCC="UPDATE defaults SET value='$CC' WHERE key='OverrideCountryCode';"
 UPDATE_SOCC="UPDATE defaults SET value='1' WHERE key='ShouldOverrideCountryCode';"
+UPDATE_SENR="UPDATE defaults SET value='2' WHERE key='GEOShowEnvironmentNameRule';"
 DELETE_OCC="DELETE FROM defaults WHERE key='OverrideCountryCode';"
 DELETE_SOCC="DELETE FROM defaults WHERE key='ShouldOverrideCountryCode';"
+DELETE_SENR="DELETE FROM defaults WHERE key='GEOShowEnvironmentNameRule';"
 
 killGEOD() { 
 	killall -9 com.apple.geod 2>/dev/null; sleep 0.1
@@ -42,6 +46,7 @@ query() {  # e.g. query "$CHECK_OCC"
 check() {
 	RESULT_OCC=$(query "$CHECK_OCC")
 	RESULT_SOCC=$(query "$CHECK_SOCC")
+	RESULT_SENR=$(query "$CHECK_SENR")
 	
 	if [ -z "$RESULT_OCC" ]; then
 		echo "========== OCC NOT found. =========="
@@ -55,6 +60,13 @@ check() {
 	else
 		echo "========== SOCC Result =========="
 		echo "$RESULT_SOCC"
+	fi
+
+	if [ -z "$RESULT_SENR" ]; then
+		echo "========== SENR NOT found. =========="
+	else
+		echo "========== SENR Result =========="
+		echo "$RESULT_SENR"
 	fi
 }
 
@@ -91,6 +103,22 @@ updateSOCC() {
 	fi
 }
 
+updateSENR() {
+	RESULT_SENR=$(query "$CHECK_SENR")
+
+	if [ -z "$RESULT_SENR" ]; then
+		echo "========== SENR NOT found. Adding SENR... =========="
+		query "$ADD_SENR" >/dev/null
+		query "$CHECK_SENR"
+	else
+		echo "========== SENR found. =========="
+		echo "$RESULT_SENR"
+		echo "========== Updating SENR... =========="
+		query "$UPDATE_SENR" >/dev/null
+		query "$CHECK_SENR"
+	fi
+}
+
 restoreSOCC() {
 	RESULT_SOCC=$(query "$CHECK_SOCC")
 
@@ -105,9 +133,24 @@ restoreSOCC() {
 	fi
 }
 
+restoreSENR() {
+	RESULT_SENR=$(query "$CHECK_SENR")
+
+	if [ -z "$RESULT_SENR" ]; then
+		echo "========== SENR NOT found, no need to restore. =========="
+	else
+		echo "========== SENR found. =========="
+		echo "$RESULT_SENR"
+		echo "========== Restoring SENR... =========="
+		query "UPDATE defaults SET value='0' WHERE key='GEOShowEnvironmentNameRule';" >/dev/null
+		query "$CHECK_SENR"
+	fi
+}
+
 delete() {
 	query "$DELETE_OCC" >/dev/null
 	query "$DELETE_SOCC" >/dev/null
+	query "$DELETE_SENR" >/dev/null
 	echo "========== Deleted OCC and SOCC. =========="
 }
 
@@ -121,8 +164,10 @@ while true; do
     echo "	1. Check"
     echo "	2. Override"
     echo "	3. Restore Default"
-	echo "	4. Delete Keys"
-    echo "	5. Exit"
+	echo "	4. Show Environment"
+	echo "	5. Hide Environment"
+	echo "	6. Delete ALL Keys"
+    echo "	7. Exit"
 	echo "Enter your choice: "
     read choice
     case $choice in
@@ -145,13 +190,25 @@ while true; do
             restoreSOCC
             echo "========== END ==========\n"
             ;;
-        4)
-            clear
-			echo "You selected Option 4, deleting..."
-			delete
+		4)
+			clear
+			echo "You selected Option 4, showing environment..."
+			updateSENR
 			echo "========== END ==========\n"
             ;;
 		5)
+			clear
+			echo "You selected Option 5, hiding environment..."
+			restoreSENR
+			echo "========== END ==========\n"
+			;;
+        6)
+            clear
+			echo "You selected Option 5, deleting all keys..."
+			delete
+			echo "========== END ==========\n"
+            ;;
+		7)
 			echo "Exiting the script. Goodbye!"
 			exit 0
 			;;
